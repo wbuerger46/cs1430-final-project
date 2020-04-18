@@ -1,0 +1,109 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CSCI 1430 Project Progress Report Template
+%
+% This is a LaTeX document. LaTeX is a markup language for producing documents.
+% Your task is to answer the questions by filling out this document, then to 
+% compile this into a PDF document. 
+% You will then upload this PDF to `Gradescope' - the grading system that we will use. 
+% Instructions for upload will follow soon.
+%
+% 
+% TO COMPILE:
+% > pdflatex thisfile.tex
+%
+% If you do not have LaTeX and need a LaTeX distribution:
+% - Departmental machines have one installed.
+% - Personal laptops (all common OS): http://www.latex-project.org/get/
+%
+% If you need help with LaTeX, come to office hours. Or, there is plenty of help online:
+% https://en.wikibooks.org/wiki/LaTeX
+%
+% Good luck!
+% James and the 1430 staff
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% How to include two graphics on the same line:
+% 
+% \includegraphics[width=0.49\linewidth]{yourgraphic1.png}
+% \includegraphics[width=0.49\linewidth]{yourgraphic2.png}
+%
+% How to include equations:
+%
+% \begin{equation}
+% y = mx+c
+% \end{equation}
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue]{hyperref}
+\usepackage[a4paper,margin=1.5in]{geometry}
+\usepackage{stackengine,graphicx}
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\usepackage{microtype}
+\usepackage{times}
+\usepackage{booktabs}
+
+% From https://ctan.org/pkg/matlab-prettifier
+\usepackage[numbered,framed]{matlab-prettifier}
+
+\frenchspacing
+\setlength{\parindent}{0cm} % Default is 15pt.
+\setlength{\parskip}{0.3cm plus1mm minus1mm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Final Project Proposal}
+\rhead{CSCI 1290/1430/2951I}
+\rfoot{\thepage}
+
+\date{}
+
+\title{\vspace{-1cm}Final Project Proposal}
+
+
+\begin{document}
+\maketitle
+\vspace{-3cm}
+\thispagestyle{fancy}
+
+\section*{Definitions}
+
+\textbf{Team name: \emph{SHAKSHUKA}}
+
+\textbf{Team members: \emph{William Buerger, Zachary Mothner, Marina Triebenbacher, Rachel Yan}}\\
+
+
+\section*{Project}
+\begin{itemize}
+  \item \textbf{What is your project idea?} \\
+  Drawing on the concept behind Google Arts \& Culture, our idea is to build 3D reconstructions of our bedrooms in this age of remote learning. Since we Zoom every day from our rooms, they have become an integral part not only of our daily lives, but also of our academic experiences at Brown. Taking a set of 2D images of a space, we want to stich together the images using common feature points, and ultimately create a panoramic reconstruction of the whole space that a user can navigate through smoothly, as if they are moving within the space.
+  \item \textbf{What data will you use?} \\
+  The primary source of data we will need is pictures of our rooms, which we will take ourselves.
+  \item \textbf{What software will you use?} \\
+  Once we have the images, we'll use SIFT and RANSAC to find corresponding points and stitch them together using calibration and projection matrices. This portion of our project will be completed in Python using numpy libraries. We will also build a mechanism for moving about our rooms. For this, we want to build a Java platform to allow users to navigate the space.
+  \item \textbf{What are the skills of the team members? Who will do what?} \\
+  Reflecting on our experiences working together in the past in other courses, we have found a productive pattern of delegating the work among us. We've split the project into 2 parts: (1) feature recognition and correspndence and (2) image stiching and Java interface. During part (1), Marina and Will will work together to perfect the use of SIFT and nearest neighbors, while Rachel and Zach will develop RANSAC and the fundamental matrix estimation, so that feature recognition and correspondence can be completed among a set of images. Then in part 2, Marina and Zach will work on image stiching while Will and Rachel develop the final Java interface.
+
+  \item \textbf{How will you know whether you have made progress? What will you measure?} \\
+  Since we split the project into two parts, the first half we'll simply look at accuracy with finding image correspondences, by measuring proportion of how many matches are accurate. Since we haven't pre-loaded accurate data points, we'll have to measure this manually.
+  For part 2, the measurement of success will based on ease of use of the interface and flawlessness of the seams.
+
+  \item \textbf{What problems do you foresee or have?} \\
+  This will be the first time we implement a computer vision algorithm with our own data set and no pre-loaded accuracy metrics. Hence, the first barrier we anticipate is determining if the performance of part 1 is accurate enough. Also, given a set of images of a space, some images may not have any overlap if they are on separate parts of the space. We will have to determine some metric to perfect which images should be stiched at all. Overall, the primary problem we anticipate is the image stiching procedure since we have no experience with combining images, especially many images. We may come across issues with panning and zooming through the final model in our Java interface.
+
+  \item \textbf{Is there anything that we can do to help? E.G., resources, equipment.} \\
+  Right now, all we can think of is moral support! Also if you have suggestions on libraries or ways to improve this idea, please suggest away!
+
+\end{itemize}
+
+
+\end{document}

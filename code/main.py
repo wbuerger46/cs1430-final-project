@@ -24,6 +24,8 @@ def load_data(image_directory_path):
 def main():
     images = load_data("../data")
     stitch_two_images(images[0], images[1])
+    #stitch_two_images(images[2], images[3])
+    
     
 
 

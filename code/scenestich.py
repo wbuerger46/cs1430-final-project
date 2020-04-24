@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
+import scipy.misc
 
 def get_feature_points(images):
     sift = cv.Sift()
@@ -36,8 +37,11 @@ def stitch_two_images(img1, img2):
     result = cv.warpPerspective(img1, H, (width, height))
     result[0:img2.shape[0], 0:img2.shape[1]] = img2
 
+    result = np.array(result)
+
     plt.figure(figsize=(20,10))
     plt.imshow(result)
+    scipy.misc.toimage(result, cmin=0.0, cmax=...).save('bed_pic.jpg')
 
     plt.axis('off')
     plt.show()  

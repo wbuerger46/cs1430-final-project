@@ -11,10 +11,10 @@ def get_feature_points(images):
 This function takes in two images and uses SIFT and K-nearest-neighbors
 matching to match keypoints between the two images
 '''
-def stitch_two_images(img1, img2):
+def stitch_two_images(image1, image2):
     sift = cv.xfeatures2d.SIFT_create()
-    img1 = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
-    img2 = cv.cvtColor(img2, cv.COLOR_BGR2GRAY)
+    img1 = cv.cvtColor(image1, cv.COLOR_BGR2GRAY)
+    img2 = cv.cvtColor(image2, cv.COLOR_BGR2GRAY)
     kp1, des1 = sift.detectAndCompute(img1, None)
     kp2, des2 = sift.detectAndCompute(img2, None)
 
@@ -29,19 +29,21 @@ def stitch_two_images(img1, img2):
 
     img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, best_matches, None, flags=2)
 
+    # plt.imshow(img3) 
+    # plt.show()   
     H = ransac(best_matches, kp1, kp2)
 
-    height = img1.shape[0] + img2.shape[0]
-    width = img1.shape[1] + img2.shape[1]
+    height = image1.shape[0] + image2.shape[0]
+    width = image1.shape[1] + image2.shape[1]
 
-    result = cv.warpPerspective(img1, H, (width, height))
-    result[0:img2.shape[0], 0:img2.shape[1]] = img2
+    result = cv.warpPerspective(image1, H, (width, height))
+    result[0:image2.shape[0], 0:image2.shape[1]] = image2
 
-    result = np.array(result)
+
+    cv.imwrite("../results/bed_result.jpg", result)
 
     plt.figure(figsize=(20,10))
     plt.imshow(result)
-    scipy.misc.toimage(result, cmin=0.0, cmax=...).save('bed_pic.jpg')
 
     plt.axis('off')
     plt.show()  

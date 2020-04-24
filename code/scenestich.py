@@ -25,8 +25,28 @@ def stitch_two_images(img1, img2):
         if im1point.distance < 0.3 * im2point.distance:
             best_matches.append([im1point])
 
+
     img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, best_matches, None, flags=2)
 
-    plt.imshow(img3)
-    plt.show()
+    H = ransac(best_matches, kp1, kp2)
 
+    height = img1.shape[0] + img2.shape[0]
+    width = img1.shape[1] + img2.shape[1]
+
+    result = cv.warpPerspective(img1, H, (width, height))
+    result[0:img2.shape[0], 0:img2.shape[1]] = img2
+
+    plt.figure(figsize=(20,10))
+    plt.imshow(result)
+
+    plt.axis('off')
+    plt.show()  
+
+
+def ransac(matches, kp1, kp2):
+    img1_points = np.float32([ kp1[m[0].queryIdx].pt for m in matches ]).reshape(-1,1,2)
+    img2_points = np.float32([ kp2[m[0].trainIdx].pt for m in matches ]).reshape(-1,1,2)
+
+    H, mask = cv.findHomography(img1_points, img2_points, cv.RANSAC, 5.0)
+
+    return H

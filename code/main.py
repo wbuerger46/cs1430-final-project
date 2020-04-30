@@ -5,6 +5,7 @@ import glob, os
 import numpy as np
 from scenestich import stitch_two_images
 from cv2 import imread
+from multiStitch import multiStitch
 
 '''
 This function loads all images in the given directory.
@@ -23,7 +24,9 @@ def load_data(image_directory_path):
 
 def main():
     images = load_data("../data")
-    stitch_two_images(images[0], images[1])
+    multiStitch(images)
+
+    #stitch_two_images(images[0], images[1])
     #stitch_two_images(images[2], images[3])
     
     

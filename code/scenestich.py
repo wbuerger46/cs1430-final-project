@@ -29,8 +29,8 @@ def stitch_two_images(image1, image2):
 
     img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, best_matches, None, flags=2)
 
-    # plt.imshow(img3) 
-    # plt.show()   
+    plt.imshow(img3) 
+    plt.show()   
     H = ransac(best_matches, kp1, kp2)
 
     height = image1.shape[0] + image2.shape[0]
@@ -40,7 +40,7 @@ def stitch_two_images(image1, image2):
     result[0:image2.shape[0], 0:image2.shape[1]] = image2
 
 
-    cv.imwrite("../results/bed_result.jpg", result)
+    cv.imwrite("../results/test_cyl.jpg", result)
 
     plt.figure(figsize=(20,10))
     plt.imshow(result)

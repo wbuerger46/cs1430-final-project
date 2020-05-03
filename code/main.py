@@ -4,8 +4,11 @@ from skimage.transform import rescale
 import glob, os
 import numpy as np
 from scenestich import stitch_two_images
+import cv2
 from cv2 import imread
 from multiStitch import multiStitch
+from cylindricalWarp import cylindricalWarp, inverseCyl
+from cameraCal import calibrateCam
 
 '''
 This function loads all images in the given directory.
@@ -23,8 +26,17 @@ def load_data(image_directory_path):
 
 
 def main():
+    
+    mtx, dist, rvecs, tvecs = calibrateCam()
     images = load_data("../data")
-    multiStitch(images)
+    warped = []
+    for img in images:
+        returned = cylindricalWarp(img, mtx)
+        warped.append(returned)
+
+    stitch_two_images(warped[0], warped[1])
+    #cv2.imwrite("../results/test_cyl.png", result)
+    # multiStitch(images)
 
     #stitch_two_images(images[0], images[1])
     #stitch_two_images(images[2], images[3])

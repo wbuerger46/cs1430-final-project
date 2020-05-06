@@ -1,40 +1,111 @@
 import cv2
 import numpy as np
+import math
+from matplotlib import pyplot as plt
+import multiprocessing as mp
+from scenestich import get_features, match_features, ransac
 
-def cylindricalWarp(img, K):
-    """This function returns the cylindrical warp for a given image and intrinsics matrix K"""
-    height, width = img.shape[:2]
-    # pixel coordinates
-    y, x = np.indices((height,width))
-    X = np.stack([x,y,np.ones_like(x)],axis=-1).reshape(height*width,3)
-    K_inv = np.linalg.inv(K) 
-    X = K_inv.dot(X.T).T # normalized coords
-    # calculate cylindrical coords (sin\theta, h, cos\theta)
-    A = np.stack([np.sin(X[:,0]),X[:,1],np.cos(X[:,0])],axis=-1).reshape(width*height,3)
-    B = K.dot(A.T).T # project back to image-pixels plane
-    # back from homog coords
-    B = B[:,:-1] / B[:,[-1]]
-    # make sure warp coords only within image bounds
-    B[(B[:,0] < 0) | (B[:,0] >= width) | (B[:,1] < 0) | (B[:,1] >= height)] = -1
-    B = B.reshape(height,width,-1)
-    
-    rgba = cv2.cvtColor(img,cv2.COLOR_BGR2BGRA) # for transparent borders...
-    # warp the image according to cylindrical coords
-    return cv2.remap(rgba, B[:,:,0].astype(np.float32), B[:,:,1].astype(np.float32), cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
 
+# THIS IS THE ONE WE ARE USING THIS IS THE RIGHT ONE AH
 def inverseCyl(img, f):
-    Y = img.shape[0]
-    X = img.shape[1]
+    height = img.shape[0]
+    width = img.shape[1]
 
-    row = np.arange(X)
+    cyl = np.zeros_like(img)
+    cyl_mask = np.zeros_like(img)
+    cyl_h, cyl_w, cly_d = cyl.shape
+    x_c = float(cyl_w) / 2.0
+    y_c = float(cyl_h) / 2.0
+    for x_cyl in np.arange(0,cyl_w):
+        for y_cyl in np.arange(0,cyl_h):
+            theta = (x_cyl - x_c) / f
+            h = (y_cyl - y_c) / f
+            X = np.array([math.sin(theta), h, math.cos(theta)])
+            x_im = (f * (X[0]/X[2])) + x_c
+            if x_im < 0 or x_im >= width:
+                continue
+            y_im = (f * (X[1]/X[2])) + y_c
 
-    xc = np.repeat(row, Y, axis=0)
+            if y_im < 0 or y_im >= height:
+                continue
 
-    X_prime = np.zeros((Y,X))
-    Y_prime = np.zeros((Y,X))
+            cyl[int(y_cyl),int(x_cyl)] = img[int(y_im),int(x_im)]
+            cyl_mask[int(y_cyl),int(x_cyl)] = 255
 
-    X_prime = (f * np.tan((X - xc) / f)) + xc
+    return (cyl,cyl_mask)
+
+def pano(warped):
+    
+    stitched_image = warped[0].copy()
+    shift_list = [[0,0]]
+    previous_features = [[], []]
+
+    for i in range(1, len(warped)):
+        img1 = warped[i-1]
+        img2 = warped[i]
+
+        kp1, des1 = previous_features
+        if len(des1) == 0:
+            kp1, des1 = get_features(img1)
+
+        kp2, des2 = get_features(img2)
+        previous_features = [kp2, des2]
 
 
 
+        feature_matches = match_features(kp1, des1, kp2, des2, img1, img2)
 
+
+        print("Features have been matched !")
+        H = ransac(feature_matches, kp1, kp2)
+        shift = [H[1][2], H[0][2]]
+        print("Best shift has been found !")
+        print(shift)
+
+        shift_list += [shift]
+        stitched_image = stitch(stitched_image, img2, shift)
+        print("Images have been stitched !")
+        # plt.imshow(stitched_image)
+        # plt.show()
+        # cv2.waitKey(0)
+
+    return stitched_image
+
+
+def blend(r2, r1, seam):
+    new_row = np.zeros(shape=r1.shape, dtype=np.uint8)
+    window = 2
+
+    for x in range(len(r1)):
+        color1 = r1[x]
+        color2 = r2[x]
+        if x < seam - window:
+            new_row[x] = color2
+        elif x > seam + window:
+            new_row[x] = color1
+        else:
+            ratio = (x - seam + window)/( window * 2)
+            new_row[x] = (1 - ratio)*color2 + ratio*color1
+
+    return new_row
+
+def stitch(img1, img2, shift):
+    shift[0] = int(shift[0])
+    shift[1] = int(shift[1])
+    padding = [
+        (int(shift[0]), 0) if shift[0] > 0 else (0, int(-shift[0])),
+        (0,0),
+        (0, 0)
+    ]
+    shifted_img1 = np.lib.pad(img1, padding, 'constant', constant_values=0)
+    horiz = int(shifted_img1.shape[1]) - int(abs(shift[1]))
+    vert = int(abs(shift[0]))
+
+    shifted_img1 = shifted_img1[vert:, :horiz]
+    # plt.imshow(shifted_img2)
+    # plt.show()
+    # cv2.waitKey(0)
+
+    stitched = np.concatenate((shifted_img1, img2), axis=1)
+
+    return stitched

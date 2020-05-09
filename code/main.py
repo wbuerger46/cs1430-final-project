@@ -5,7 +5,6 @@ import glob, os
 import numpy as np
 import cv2
 from cv2 import imread
-from multiStitch import multiStitch, crop
 from cylindricalWarp import inverseCyl, pano
 from cameraCal import calibrateCam
 from matplotlib import pyplot as plt

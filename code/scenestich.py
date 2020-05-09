@@ -3,56 +3,39 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 import scipy.misc
 
+# Creates CV2 Sift()
 def get_feature_points(images):
     sift = cv.Sift()
 
-
-'''
-This function takes in two images and uses SIFT and K-nearest-neighbors
-matching to match keypoints between the two images
-'''
-def stitch_two_images(image1, image2):
+# Uses SIFT to find and return all of the features in a given image
+def get_features(image):
     sift = cv.xfeatures2d.SIFT_create()
-    img1 = cv.cvtColor(image1, cv.COLOR_BGR2GRAY)
-    img2 = cv.cvtColor(image2, cv.COLOR_BGR2GRAY)
-    kp1, des1 = sift.detectAndCompute(img1, None)
-    kp2, des2 = sift.detectAndCompute(img2, None)
+    img = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    kp, des = sift.detectAndCompute(img, None)
+    # returns the keypoints and the feature discriptors for the given image
+    return kp, des
 
+# Given key points and feature discriptors for  2 images, return a list of the best feautre matches betweent the images
+def match_features(kp1, des1, kp2, des2):
+    # Generates a list of feature matches
     matcher = cv.BFMatcher()
     matches = matcher.knnMatch(des1, des2, k=2)
 
+    # Adds the matches that are within threshold to a list of best matches
     best_matches = []
     for im1point, im2point in matches:
-        if im1point.distance < 0.3 * im2point.distance:
+        if im1point.distance < 0.2 * im2point.distance:
             best_matches.append([im1point])
 
+    return best_matches
 
-    img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, best_matches, None, flags=2)
-
-    # plt.imshow(img3) 
-    # plt.show()   
-    H = ransac(best_matches, kp1, kp2)
-
-    height = image1.shape[0] + image2.shape[0]
-    width = image1.shape[1] + image2.shape[1]
-
-    result = cv.warpPerspective(image1, H, (width, height))
-    result[0:image2.shape[0], 0:image2.shape[1]] = image2
-
-
-    cv.imwrite("../results/bed_result.jpg", result)
-
-    plt.figure(figsize=(20,10))
-    plt.imshow(result)
-
-    plt.axis('off')
-    plt.show()  
-
-
+# Given a list of feature matches and key points from 2 images, calculates homography matrix
 def ransac(matches, kp1, kp2):
+    # Gets the actual points from the two images
     img1_points = np.float32([ kp1[m[0].queryIdx].pt for m in matches ]).reshape(-1,1,2)
     img2_points = np.float32([ kp2[m[0].trainIdx].pt for m in matches ]).reshape(-1,1,2)
 
+    # Uses CV2's findHomography() to generate the homography matrix, H
     H, mask = cv.findHomography(img1_points, img2_points, cv.RANSAC, 5.0)
 
     return H

@@ -3,9 +3,13 @@ from skimage import img_as_float32
 from skimage.transform import rescale
 import glob, os
 import numpy as np
-from scenestich import stitch_two_images
+import cv2
 from cv2 import imread
-from multiStitch import multiStitch
+from cylindricalWarp import inverseCyl, pano
+from cameraCal import calibrateCam
+from matplotlib import pyplot as plt
+import natsort
+
 
 '''
 This function loads all images in the given directory.
@@ -14,22 +18,35 @@ def load_data(image_directory_path):
     os.chdir(image_directory_path)
     scale_factor = 0.5
     image_files = []
-    for im_file in glob.glob("*.jpg"):
-        #mage = rgb2gray(img_as_float32(io.imread(im_file)))
-        #image = np.float32(rescale(image, scale_factor))
+    names = []
+    files = glob.glob("*.jpg")
+    files = (natsort.natsorted(files,reverse=False))
+    print(files)
+    for im_file in files:
         image = imread(im_file)
         image_files.append(image)
-    return image_files
+        names.append(im_file)
+    return image_files, names
 
 
 def main():
-    images = load_data("../data")
-    multiStitch(images)
+    
+    # mtx, dist, rvecs, tvecs = calibrateCam()
+    images, fileNames = load_data("../data/cyl")
+    ###########################################################################
+    # DID THIS ALREADY SAVED THOSE IMAGES
+    # warped = []
+    # for i in range(len(images)):
+    #     print(i)
+    #     returned, ret_m = inverseCyl(images[i], mtx[0][0])
+    #     cv2.imwrite("../data/cyl"+fileNames[i]+"_cyl.png", returned)
+    #     warped.append(returned)
+    ###########################################################################
+    stitched_image = pano(images)
+    cv2.imwrite("../results/panorama.png", stitched_image)
+    plt.imshow(stitched_image) 
+    plt.show()  
 
-    #stitch_two_images(images[0], images[1])
-    #stitch_two_images(images[2], images[3])
-    
-    
 
 
 if __name__ == "__main__":

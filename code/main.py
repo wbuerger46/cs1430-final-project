@@ -31,10 +31,13 @@ def load_data(image_directory_path):
 
 def main():
     
-    # mtx, dist, rvecs, tvecs = calibrateCam()
+    # Loads the cylindrical images in
     images, fileNames = load_data("../data/cyl")
     ###########################################################################
-    # DID THIS ALREADY SAVED THOSE IMAGES
+    # This code generates the cylindrical images
+    # It only needed to be run once, and now the images are saved in data/cyl
+    ###########################################################################
+    # mtx, dist, rvecs, tvecs = calibrateCam()
     # warped = []
     # for i in range(len(images)):
     #     print(i)
@@ -42,7 +45,11 @@ def main():
     #     cv2.imwrite("../data/cyl"+fileNames[i]+"_cyl.png", returned)
     #     warped.append(returned)
     ###########################################################################
+    
+    # Gets the actual panorama from the warped images
     stitched_image = pano(images)
+
+    # Saves and displays the stitched panorama
     cv2.imwrite("../results/panorama.png", stitched_image)
     plt.imshow(stitched_image) 
     plt.show()  

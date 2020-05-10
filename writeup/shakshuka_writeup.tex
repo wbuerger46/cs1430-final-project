@@ -142,6 +142,9 @@ def stitch(img1, img2, shift):
 \bigskip
 \noindent\textbf{Step 4: Creating the Panorama Visualizer}
 
+We built the 360 panorama visualizer using the Python libraries PIL, for image processing, and TKinter, for graphical displays. The visualizer takes any type of image, automatically adjusts the window size for an appropriate display, and uses user input from the four arrow keys to pan around the image.
+
+In addition to basic four-directional movement, it was important to us to have the ability to wrap around our 360 panoramas continuously, providing an immersive experience, as if someone is turning in a constant circle around the space. The visualizer tracks the horizontal and vertical shifts around the image and whenever the visualizer is initialized with wrapping set to True, it automatically wraps along where the edges of the image would be. To the user, there is no evidence of any edges, appearing like a continuous image (relying on a well-made panorama).
 
 \section{Results}
 
@@ -149,7 +152,7 @@ Our initial result of stitching together planar images was relatively successful
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{bed-result.jpeg}
+    % \includegraphics[width=\linewidth]{bed-result.jpeg}
     \caption{Planar Stitching Result.}
     \label{fig:result1}
 \end{figure}

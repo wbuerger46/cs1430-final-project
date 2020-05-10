@@ -15,7 +15,7 @@ def get_features(image):
     # returns the keypoints and the feature discriptors for the given image
     return kp, des
 
-# Given key points and feature discriptors for  2 images, return a list of the best feautre matches betweent the images
+# Given key points and feature discriptors for  2 images, return a list of the best feature matches between the images
 def match_features(kp1, des1, kp2, des2):
     # Generates a list of feature matches
     matcher = cv.BFMatcher()

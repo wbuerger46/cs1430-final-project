@@ -88,4 +88,4 @@ class PanoramaViewer():
         self.window.mainloop()
 
 if __name__ == "__main__":
-    PanoramaViewer("pano5.jpg", True)
+    PanoramaViewer("results/pano5.jpg", True)

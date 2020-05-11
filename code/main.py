@@ -8,6 +8,7 @@ from cv2 import imread
 from cylindricalWarp import inverseCyl, pano
 from cameraCal import calibrateCam
 from matplotlib import pyplot as plt
+from panorama_viewer import PanoramaViewer
 import natsort
 
 
@@ -51,8 +52,9 @@ def main():
 
     # Saves and displays the stitched panorama
     cv2.imwrite("../results/panorama.png", stitched_image)
-    plt.imshow(stitched_image) 
-    plt.show()  
+    PanoramaViewer("../results/panorama.png")
+    # plt.imshow(stitched_image) 
+    # plt.show()  
 
 
 

@@ -1,7 +1,11 @@
 from PIL import Image, ImageTk
 import tkinter
 
-
+'''
+This class represents a simple GUI for a 360 panorama view. It allows for 
+4-directional view panning using the arrow keys, and automatically wraps
+around panoramas.
+'''
 class PanoramaViewer():
     def __init__(self, image_path, wraps=True):
         self.wraps = wraps
@@ -31,6 +35,10 @@ class PanoramaViewer():
         self.right_img_id = self.canvas.create_image(0, 0, image=tk_img, anchor="nw")
         window.mainloop()
 
+    '''
+    This function is called on any keypress and dictates the 4-directional
+    view panning by calculating the new shift and checking all bounds.
+    '''
     def key_press(self, event):
         dx = 0
         dy = 0
@@ -48,11 +56,13 @@ class PanoramaViewer():
         elif self.shift_y > self.img_height - self.window_height + dy:
             dy = 0
         
+        # Wraps the panorama if indicated
         if self.wraps:
             if self.shift_x < -self.img_width:
                 dx -= self.img_width
             elif self.shift_x > 0:
                 dx += self.img_width
+        # If not wrapping, stops movement
         else:
             if self.shift_x < dx:
                 dx = 0

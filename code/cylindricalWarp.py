@@ -68,43 +68,10 @@ def pano(warped):
 
         # Based on the shift, stitch the images together
         stitched_image = stitch(stitched_image, img2, shift)
-        blended = blend(img1, img2, stitched_image, stitched_image.shape[1]-img2.shape[1])
 
-        plt.imshow(stitched_image)
-        plt.show()
-        cv2.waitKey(0)
-
-        plt.imshow(blended)
-        plt.show()
-        cv2.waitKey(0)
         print("Images have been stitched !")
 
     return stitched_image
-
-
-# Blends the seam created by stitching the images together
-def blend(image1, image2, stitched, seam):
-    window = 60
-
-    for x in range(seam, seam + 2*window):
-        for y in range(stitched.shape[0]):
-            ratio = np.abs((x - seam + window)/(window*2))
-            stitched[y][x-window] = (1-ratio)*image1[y][x] + ratio*image2[y][x-seam]
-
-    return stitched
-
-    # for x in range(len(r1)):
-    #     color1 = r1[x]
-    #     color2 = r2[x]
-    #     if x < seam - window:
-    #         new_row[x] = color2
-    #     elif x > seam + window:
-    #         new_row[x] = color1
-    #     else:
-    #         ratio = (x - seam + window)/( window * 2)
-    #         new_row[x] = (1 - ratio)*color2 + ratio*color1
-
-    # return new_row
 
 #Given two images and the shift, stitch the images together
 def stitch(img1, img2, shift):

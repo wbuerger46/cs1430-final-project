@@ -11,6 +11,8 @@ from matplotlib import pyplot as plt
 from panorama_viewer import PanoramaViewer
 import natsort
 
+## RUN THE VISUALIZER BY ITSELF WITH 'python3 panorama_viewer.py'
+
 
 '''
 This function loads all images in the given directory.
@@ -53,8 +55,6 @@ def main():
     # Saves and displays the stitched panorama
     cv2.imwrite("../results/panorama.png", stitched_image)
     PanoramaViewer("../results/panorama.png")
-    # plt.imshow(stitched_image) 
-    # plt.show()  
 
 
 

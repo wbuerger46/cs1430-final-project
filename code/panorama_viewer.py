@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter
 
+## RUN THE VISUALIZER BY ITSELF WITH 'python3 panorama_viewer.py'
+
 '''
 This class represents a simple GUI for a 360 panorama view. It allows for 
 4-directional view panning using the arrow keys, and automatically wraps
@@ -75,4 +77,4 @@ class PanoramaViewer():
         self.shift_y -= dy
 
 if __name__ == "__main__":
-    PanoramaViewer("results/pano5.jpg", True)
+    PanoramaViewer("../results/pano5.jpg", True)
